@@ -1,6 +1,8 @@
+using Futbol.BaseDatos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +26,8 @@ namespace Futbol
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddDbContext<FutbolDbContext>(options => options.UseSqlite(@"filename=C:\Desarr\Ort\Nueva Modalidad\Futbol\Futbol\Futbol\Futbol\BaseDatos\DbFutbol.db"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
