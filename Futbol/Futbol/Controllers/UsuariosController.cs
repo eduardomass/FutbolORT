@@ -22,7 +22,7 @@ namespace Futbol.Controllers
         // GET: Usuarios
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Usuarios.ToListAsync());
+            return View(await _context.Jugadores.ToListAsync());
         }
 
         // GET: Usuarios/Details/5
@@ -33,7 +33,7 @@ namespace Futbol.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios
+            var usuario = await _context.Jugadores
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (usuario == null)
             {
@@ -58,11 +58,34 @@ namespace Futbol.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                //1. Obtener todos los usuarios
+                
+                //3. Si no se repite agrega, sino pum!
+                if (this.ValidarRepeticion(usuario))
+                {
+                    _context.Add(usuario);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ViewBag.Error = "Email Repetido";
+                    return View(usuario);
+                }
             }
             return View(usuario);
+        }
+
+        private bool ValidarRepeticion(Usuario usuario)
+        {
+            var listaUsuarios = _context.Jugadores.ToList();
+            //2. Por cada usuario, ver si el email se repite contra el email recibido(usuario)
+            var noSeRepite = !listaUsuarios
+                .Where(a => a.Email != null)
+                .Any(usu => usu.Email.Equals(usuario.Email, StringComparison.OrdinalIgnoreCase) &&
+                usu.Id != usuario.Id);
+
+            return noSeRepite;
         }
 
         // GET: Usuarios/Edit/5
@@ -73,7 +96,7 @@ namespace Futbol.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = await _context.Jugadores.FindAsync(id);
             if (usuario == null)
             {
                 return NotFound();
@@ -86,32 +109,39 @@ namespace Futbol.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Password")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Password,Email")] Usuario usuario)
         {
-            if (id != usuario.Id)
-            {
-                return NotFound();
-            }
-
+            
             if (ModelState.IsValid)
             {
-                try
+                if (this.ValidarRepeticion(usuario))
                 {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
+
+                    try
+                    {
+                        //var usuarioBD = _context.Usuarios.FirstOrDefault(o=>o.Id == usuario.Id);
+                        //usuarioBD.Email = usuario.Email;
+                        _context.Update(usuario).State = EntityState.Detached;
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!UsuarioExists(usuario.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!UsuarioExists(usuario.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ViewBag.Error = "Email Repetido";
+                    return View(usuario);
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(usuario);
         }
@@ -124,7 +154,7 @@ namespace Futbol.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios
+            var usuario = await _context.Jugadores
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (usuario == null)
             {
@@ -139,15 +169,15 @@ namespace Futbol.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            _context.Usuarios.Remove(usuario);
+            var usuario = await _context.Jugadores.FindAsync(id);
+            _context.Jugadores.Remove(usuario);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool UsuarioExists(int id)
         {
-            return _context.Usuarios.Any(e => e.Id == id);
+            return _context.Jugadores.Any(e => e.Id == id);
         }
     }
 }

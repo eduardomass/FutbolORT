@@ -7,14 +7,9 @@ using System.Threading.Tasks;
 
 namespace Futbol.Models
 {
-    //[Table("EQUIPO")]
-    public class Equipo
+    //[Table("JUGADOR")]
+    public class Administrador : Usuario
     {
-        [Key]
-        public int Id { get; set; }
-
-        
-
-        //[ForeignKey(nameof(Clase))]
+        public override Rol Rol => Rol.Administrador;
     }
 }

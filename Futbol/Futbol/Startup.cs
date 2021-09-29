@@ -1,4 +1,5 @@
 using Futbol.BaseDatos;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,9 +26,12 @@ namespace Futbol
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(ConfigurarcionCookie);
             services.AddControllersWithViews();
-
-            services.AddDbContext<FutbolDbContext>(options => options.UseSqlite(@"filename=C:\Desarr\Ort\Nueva Modalidad\Futbol\Futbol\Futbol\Futbol\BaseDatos\DbFutbol.db"));
+             services.AddDbContext<FutbolDbContext>(options => options
+            .UseSqlite(
+                
+                @"filename=C:\Desarr\Ort\Nueva Modalidad\Futbol\Futbol\Futbol\Futbol\BaseDatos\DbFutbol.db"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +51,9 @@ namespace Futbol
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            
+            app.UseAuthentication();
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -56,6 +62,15 @@ namespace Futbol
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseCookiePolicy();
+        }
+
+        public static void ConfigurarcionCookie(CookieAuthenticationOptions opciones)
+        {
+            opciones.LoginPath = "/Login/Login";
+            opciones.AccessDeniedPath = "/Login/NoAutorizado";
+            opciones.LogoutPath = "/Login/Logout";
         }
     }
 }

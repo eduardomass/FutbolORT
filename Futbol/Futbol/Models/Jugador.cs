@@ -7,21 +7,9 @@ using System.Threading.Tasks;
 
 namespace Futbol.Models
 {
-    [Table("JUGADOR")]
-    public class JUGADOR
+    //[Table("JUGADOR")]
+    public class Jugador : Usuario
     {
-        [Key]
-        public int Id { get; set; }
-        [Required]
-        public string Nombre { get; set; }
-        public string Apellido { get; set; }
-        public string DNI { get; set; }
-
-        [Required]
-        public string Email { get; set; }
-
-        public string Foto { get; set; }
-
-        public bool Activo { get; set; }
+        public override Rol Rol => Rol.Jugador;
     }
 }

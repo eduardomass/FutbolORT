@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Futbol.Models
 {
-    [Table("USUARIOS")]
-    public class Usuario
+    //[Table("USUARIOS")]
+    public abstract class Usuario
     {
         [Key]
         public int Id { get; set; }
@@ -16,7 +16,9 @@ namespace Futbol.Models
         public string Nombre { get; set; }
         public string Password { get; set; }
 
-        [Display(Name ="em@il")]
-        public string Email { get; set; }
+        [Display(Name = "em@il")]
+        public string Email { get; set; } = "";
+
+        public abstract Rol Rol { get; }
     }
 }

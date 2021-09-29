@@ -13,7 +13,15 @@ namespace Futbol.BaseDatos
         {
 
         }
-        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Jugador> Jugadores { get; set; }
+        public DbSet<Administrador> Administradores { get; set; }
+
+        public DbSet<Equipo> Equipos { get; set; }
+
+        public DbSet<JugadoresPorEquipo> JugadoresPorEquipos { get; set; }
+
+        //add-migration Migracion_1
+        //udpate-database
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{

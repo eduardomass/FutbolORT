@@ -7,23 +7,25 @@ using System.Threading.Tasks;
 
 namespace Futbol.Models
 {
-    [Table("PARTIDO")]
-    public class PARTIDO
+    //[Table("PARTIDO")]
+    public class Partido
     {
         [Key]
         public int Id { get; set; }
         
-        [ForeignKey(nameof(EQUIPO))]
+        [ForeignKey(nameof(Equipo))]
         public int EquipoLocalId { get; set; }
         
-        [ForeignKey(nameof(EQUIPO))]
+        [ForeignKey(nameof(Equipo))]
         public int EquipoVisitianteId { get; set; }
 
         [ForeignKey("EquipoLocalId")]
-        public virtual EQUIPO EquipoLocal { get; set; }
+        public virtual Equipo EquipoLocal { get; set; }
         
         [ForeignKey("EquipoVisitianteId")]
-        public virtual EQUIPO EquipoVisitante { get; set; }
+        public virtual Equipo EquipoVisitante { get; set; }
+
+        public DateTime Fecha { get; set; }
 
     }
 }

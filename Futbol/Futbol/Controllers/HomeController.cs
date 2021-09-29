@@ -1,4 +1,5 @@
 ﻿using Futbol.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace Futbol.Controllers
 {
+    [Authorize(Roles = nameof(Rol.Jugador))]
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
