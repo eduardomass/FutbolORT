@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Futbol.BaseDatos;
 using Futbol.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Futbol.Controllers
 {
+    [Authorize(Roles = "Administrador, Jugador")]
     public class UsuariosController : Controller
     {
         private readonly FutbolDbContext _context;

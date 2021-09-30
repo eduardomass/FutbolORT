@@ -28,10 +28,7 @@ namespace Futbol
         {
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(ConfigurarcionCookie);
             services.AddControllersWithViews();
-             services.AddDbContext<FutbolDbContext>(options => options
-            .UseSqlite(
-                
-                @"filename=C:\Desarr\Ort\Nueva Modalidad\Futbol\Futbol\Futbol\Futbol\BaseDatos\DbFutbol.db"));
+            services.AddDbContext<FutbolDbContext>(options => options.UseSqlite(@"filename=C:\Desarr\Ort\Nueva Modalidad\Futbol\Futbol\Futbol\Futbol\BaseDatos\DbFutbol.db"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,6 +68,7 @@ namespace Futbol
             opciones.LoginPath = "/Login/Login";
             opciones.AccessDeniedPath = "/Login/NoAutorizado";
             opciones.LogoutPath = "/Login/Logout";
+            opciones.ExpireTimeSpan = System.TimeSpan.FromMinutes(1);
         }
     }
 }

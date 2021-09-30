@@ -20,6 +20,8 @@ namespace Futbol.BaseDatos
 
         public DbSet<JugadoresPorEquipo> JugadoresPorEquipos { get; set; }
 
+        public DbSet<Partido> Partidos { get; set; }
+
         //add-migration Migracion_1
         //udpate-database
 

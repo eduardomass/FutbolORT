@@ -79,7 +79,7 @@ namespace Futbol.Controllers
 
                     if (!string.IsNullOrWhiteSpace(returnUrl))
                         return Redirect(returnUrl);
-
+                    
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
             }
@@ -93,7 +93,6 @@ namespace Futbol.Controllers
         }
 
         [Authorize]
-        [HttpPost]
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
