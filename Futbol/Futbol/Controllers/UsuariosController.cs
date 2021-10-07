@@ -56,7 +56,7 @@ namespace Futbol.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Usuario usuario)
+        public async Task<IActionResult> Create(Jugador usuario)
         {
             if (ModelState.IsValid)
             {
@@ -80,7 +80,8 @@ namespace Futbol.Controllers
 
         private bool ValidarRepeticion(Usuario usuario)
         {
-            var listaUsuarios = _context.Jugadores.ToList();
+            List<Usuario> listaUsuarios = _context.Jugadores.ToList<Usuario>();
+            listaUsuarios = _context.Administradores.ToList<Usuario>();
             //2. Por cada usuario, ver si el email se repite contra el email recibido(usuario)
             var noSeRepite = !listaUsuarios
                 .Where(a => a.Email != null)

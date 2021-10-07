@@ -10,7 +10,7 @@ namespace Futbol.Models
     {
         [Key]
         public int Id { get; set; }
-        public int JugadorId { get; set; }
+        public int? JugadorId { get; set; }
         public Jugador Jugador { get; set; }
 
         public int EquipoId { get; set; }

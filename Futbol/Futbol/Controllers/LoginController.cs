@@ -77,10 +77,19 @@ namespace Futbol.Controllers
 
                     TempData["LoggedIn"] = true;
 
-                    if (!string.IsNullOrWhiteSpace(returnUrl))
-                        return Redirect(returnUrl);
+                    //if (!string.IsNullOrWhiteSpace(returnUrl))
+                    //    return Redirect(returnUrl);
+
+                    if (rol == Rol.Jugador)
+                    {
+                        return RedirectToAction(nameof(PartidosController.Confirmacion), "Partidos");
+                    }
+                    else
+                    {
+                        return RedirectToAction(nameof(HomeController.Index), "Home");
+                    }
                     
-                    return RedirectToAction(nameof(HomeController.Index), "Home");
+                    
                 }
             }
 
