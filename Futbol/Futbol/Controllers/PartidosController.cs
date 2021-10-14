@@ -193,5 +193,63 @@ namespace Futbol.Controllers
 
         }
 
+        [HttpPost]
+        public ActionResult Confirmacion(JugadoresPorEquipo jugadorPorEquipo)
+        {
+            RNPartido.ConfirmarODesconfirmarJugador(_context, jugadorPorEquipo.Jugador.Id);
+
+            return RedirectToAction("Confirmacion");
+            
+
+        }
+
+
+        public IActionResult ConfirmacionMasiva()
+        {
+
+            var ultimoPartido = _context.Partidos
+              .OrderByDescending(x => x.Fecha)
+              .FirstOrDefault(); //Esto lo tengo que cambiar por una regla de negocios!!
+            
+            List<int> idsEquiposPosibles = new List<int>();
+            idsEquiposPosibles.Add(ultimoPartido.EquipoLocalId);
+            idsEquiposPosibles.Add(ultimoPartido.EquipoVisitianteId);
+            var listaJugadoresPorEquipos = _context.JugadoresPorEquipos.Where(o => idsEquiposPosibles.Contains(o.EquipoId)).ToList();
+
+            var jugadores = _context.Jugadores.ToList();
+            var lista = new Futbol.ViewModel.VMConfirmacionList();
+            lista.VMConfirmacionLista = new List<ViewModel.VMConfirmacion>();
+            foreach (var jugador in jugadores)
+            {
+                ViewModel.VMConfirmacion modelo = new ViewModel.VMConfirmacion();
+                
+                modelo.Jugador = jugador;
+                modelo.IdClave = jugador.Id;
+                modelo.Confirmado = listaJugadoresPorEquipos.Any(o => o.JugadorId == jugador.Id);
+                modelo.FechaPartido = ultimoPartido.Fecha;
+                lista.VMConfirmacionLista.Add(modelo);
+            }
+            
+            return View(lista);
+        }
+
+        // POST: Partidos/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ConfirmacionMasiva(Futbol.ViewModel.VMConfirmacionList modelo)
+        {
+            foreach (var confirmacion in modelo.VMConfirmacionLista)
+            {
+                if (confirmacion.Confirmado)
+                {
+                    RNPartido.ConfirmarODesconfirmarJugador(_context, confirmacion.IdClave);
+                }
+            }
+
+            return RedirectToAction(nameof(ConfirmacionMasiva));
+        }
+
     }
 }

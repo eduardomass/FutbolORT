@@ -8,9 +8,10 @@ namespace Futbol.ViewModel
 {
     public class VMConfirmacion
     {
+        public int IdClave { get; set; }
         public int CantidadLugaresDisponibles { get; set; }
 
-        public Jugador Jugador { get; set; }
+        public Jugador Jugador { get; set;        }
         public DateTime FechaPartido { get; set; }
         public bool Confirmado { get; set; }
         public string ConfirmadoString { get
@@ -21,5 +22,10 @@ namespace Futbol.ViewModel
                     return "Jugar";
             }
         }
+    }
+
+    public class VMConfirmacionList
+    {
+        public List<VMConfirmacion> VMConfirmacionLista { get; set; }
     }
 }

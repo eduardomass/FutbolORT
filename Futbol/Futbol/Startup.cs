@@ -68,7 +68,7 @@ namespace Futbol
             opciones.LoginPath = "/Login/Login";
             opciones.AccessDeniedPath = "/Login/NoAutorizado";
             opciones.LogoutPath = "/Login/Logout";
-            opciones.ExpireTimeSpan = System.TimeSpan.FromMinutes(1);
+            opciones.ExpireTimeSpan = System.TimeSpan.FromMinutes(10);
         }
     }
 }
