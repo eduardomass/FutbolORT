@@ -1,22 +1,27 @@
 ﻿@model Futbol.ViewModel.VMConfirmacionList
 
 <form asp-action="ConfirmacionMasiva">
-
+    <h1>@Model.FechaPartido.Date</h1>
+    <hr />
     <table class="table table-primary table-striped">
         @for (int i = 0; i < Model.VMConfirmacionLista.Count(); i++)
         {
-            <tr>
-                <td class="col-md-2">
-                    <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="text" />
-                    <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="hidden" />
+        <tr>
+            @*<td class="col-md-2">
+            <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="text" />
+            <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="hidden" />
+        </td>*@
+            <td class="col-md-4">
+                <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="hidden" />
+                <input asp-for="@Model.VMConfirmacionLista[i].Jugador.Nombre" type="text" />
+            </td>
+            <td class="col-md-4">
+                @Model.VMConfirmacionLista[i].CantidadPartidosJugados
                 </td>
-                <td class="col-md-2">
-                    <input asp-for="@Model.VMConfirmacionLista[i].Jugador.Nombre" type="text" />
-                </td>
-                <td class="col-md-1">
-                    <input type="checkbox" asp-for="@Model.VMConfirmacionLista[i].Confirmado" />
-                </td>
-            </tr>
+            <td class="col-md-1">
+                <input type="checkbox" asp-for="@Model.VMConfirmacionLista[i].Confirmado" />
+            </td>
+        </tr>
         }
     </table>
 

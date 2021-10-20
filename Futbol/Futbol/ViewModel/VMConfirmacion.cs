@@ -10,7 +10,7 @@ namespace Futbol.ViewModel
     {
         public int IdClave { get; set; }
         public int CantidadLugaresDisponibles { get; set; }
-
+        public int CantidadPartidosJugados { get; set; } = 0;
         public Jugador Jugador { get; set;        }
         public DateTime FechaPartido { get; set; }
         public bool Confirmado { get; set; }
@@ -26,6 +26,7 @@ namespace Futbol.ViewModel
 
     public class VMConfirmacionList
     {
+        public DateTime FechaPartido { get; set; }
         public List<VMConfirmacion> VMConfirmacionLista { get; set; }
     }
 }

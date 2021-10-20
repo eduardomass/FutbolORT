@@ -175,9 +175,8 @@ namespace Futbol.Controllers
             int idJugador = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             
             var jugador = _context.Jugadores.Where(o => o.Id == idJugador).FirstOrDefault();
-            var ultimoPartido = _context.Partidos
-              .OrderByDescending(x => x.Fecha)
-              .FirstOrDefault();
+            var ultimoPartido = RNPartido.ObtenerPartidoProximoAJugar(_context);
+
             List<int> idsEquiposPosibles = new List<int>();
             idsEquiposPosibles.Add(ultimoPartido.EquipoLocalId);
             idsEquiposPosibles.Add(ultimoPartido.EquipoVisitianteId);
@@ -206,11 +205,8 @@ namespace Futbol.Controllers
 
         public IActionResult ConfirmacionMasiva()
         {
+            var ultimoPartido = RNPartido.ObtenerPartidoProximoAJugar(_context);
 
-            var ultimoPartido = _context.Partidos
-              .OrderByDescending(x => x.Fecha)
-              .FirstOrDefault(); //Esto lo tengo que cambiar por una regla de negocios!!
-            
             List<int> idsEquiposPosibles = new List<int>();
             idsEquiposPosibles.Add(ultimoPartido.EquipoLocalId);
             idsEquiposPosibles.Add(ultimoPartido.EquipoVisitianteId);
@@ -218,6 +214,7 @@ namespace Futbol.Controllers
 
             var jugadores = _context.Jugadores.ToList();
             var lista = new Futbol.ViewModel.VMConfirmacionList();
+            lista.FechaPartido = ultimoPartido.Fecha;
             lista.VMConfirmacionLista = new List<ViewModel.VMConfirmacion>();
             foreach (var jugador in jugadores)
             {
@@ -227,6 +224,8 @@ namespace Futbol.Controllers
                 modelo.IdClave = jugador.Id;
                 modelo.Confirmado = listaJugadoresPorEquipos.Any(o => o.JugadorId == jugador.Id);
                 modelo.FechaPartido = ultimoPartido.Fecha;
+                modelo.CantidadPartidosJugados = _context
+                    .JugadoresPorEquipos.Count(j => j.JugadorId == jugador.Id);
                 lista.VMConfirmacionLista.Add(modelo);
             }
             
@@ -242,10 +241,9 @@ namespace Futbol.Controllers
         {
             foreach (var confirmacion in modelo.VMConfirmacionLista)
             {
-                if (confirmacion.Confirmado)
-                {
-                    RNPartido.ConfirmarODesconfirmarJugador(_context, confirmacion.IdClave);
-                }
+                RNPartido.ConfirmarODesconfirmarJugador(_context, 
+                    confirmacion.IdClave,
+                    confirmacion.Confirmado);
             }
 
             return RedirectToAction(nameof(ConfirmacionMasiva));

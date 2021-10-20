@@ -9,22 +9,44 @@ namespace Futbol.Reglas
 {
     public class RNPartido
     {
-        public static void ConfirmarODesconfirmarJugador(FutbolDbContext _context, int idJugador)
+        /// <summary>
+        /// Metodo que sirve para realizar un Toogle entre si estaba o no estaba confirmado
+        /// </summary>
+        /// <param name="_context">Contexto de Base de Datos</param>
+        /// <param name="idJugador">Jugador que se intenta cambiar el estado.</param>
+        public static void ConfirmarODesconfirmarJugador(FutbolDbContext _context,
+            int idJugador)
+        {
+            RNPartido.ConfirmarODesconfirmarJugador(_context, idJugador, true, true);
+        }
+            public static void ConfirmarODesconfirmarJugador(FutbolDbContext _context, 
+            int idJugador,
+            bool confirmo, 
+            bool toggle = false)
         {
             var jugador = _context.Jugadores.Where(o => o.Id == idJugador).FirstOrDefault();
-            var ultimoPartido = RNPartido.ObtenerUltimoPartido(_context);
+            var ultimoPartido = RNPartido.ObtenerPartidoProximoAJugar(_context);
             List<int> idsEquiposPosibles = new List<int>();
             idsEquiposPosibles.Add(ultimoPartido.EquipoLocalId);
             idsEquiposPosibles.Add(ultimoPartido.EquipoVisitianteId);
 
             var listaJugadoresPorEquipos = _context.JugadoresPorEquipos.Where(o => idsEquiposPosibles.Contains(o.EquipoId) &&
                                 o.JugadorId == idJugador).ToList();
+            bool estabaConfimado = listaJugadoresPorEquipos.Count > 0;
 
-            if (listaJugadoresPorEquipos.Count > 0)
+            if (toggle)
+                confirmo = !estabaConfimado;
+
+            if (estabaConfimado && !confirmo)
             {
                 //Ya estaba confirmado, desconfirma, hay que eliminar
+                var jugadorPorEquipoAnteriormenteConfimado = 
+                    listaJugadoresPorEquipos.FirstOrDefault();
+                _context.JugadoresPorEquipos.Remove(jugadorPorEquipoAnteriormenteConfimado);
+                _context.SaveChanges();
+
             }
-            else
+            else if (!estabaConfimado && confirmo)
             {
                 //Falta ver a que equipo va, deberia hacer una regla de negocios!
                 _context.JugadoresPorEquipos.Add(new JugadoresPorEquipo()
@@ -35,11 +57,12 @@ namespace Futbol.Reglas
                 _context.SaveChanges();
             }
         }
-        public static Partido ObtenerUltimoPartido(FutbolDbContext _context)
+        public static Partido ObtenerPartidoProximoAJugar(FutbolDbContext _context)
         {
 
             var ultimoPartido = _context.Partidos
-             .OrderByDescending(x => x.Fecha)
+             .OrderBy(x => x.Fecha)
+             .Where(o=>  o.Fecha.Date >= DateTime.Now.Date )
              .FirstOrDefault();
            
 
