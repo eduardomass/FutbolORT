@@ -1,29 +1,85 @@
 ﻿@model Futbol.ViewModel.VMConfirmacionList
 
 <form asp-action="ConfirmacionMasiva">
-    <h1>@Model.FechaPartido.Date</h1>
-    <hr />
-    <table class="table table-primary table-striped">
-        @for (int i = 0; i < Model.VMConfirmacionLista.Count(); i++)
-        {
-        <tr>
-            @*<td class="col-md-2">
-            <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="text" />
-            <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="hidden" />
-        </td>*@
-            <td class="col-md-4">
-                <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="hidden" />
-                <input asp-for="@Model.VMConfirmacionLista[i].Jugador.Nombre" type="text" />
-            </td>
-            <td class="col-md-4">
-                @Model.VMConfirmacionLista[i].CantidadPartidosJugados
-                </td>
-            <td class="col-md-1">
-                <input type="checkbox" asp-for="@Model.VMConfirmacionLista[i].Confirmado" />
-            </td>
-        </tr>
+    @if (ViewBag.Error == null)
+    {
+        <h1>@Model.FechaPartido.Date</h1>
+        <hr />
+
+        <table class="table table-primary table-striped">
+            @for (int i = 0; i < Model.VMConfirmacionLista.Count(); i++)
+            {
+                <tr>
+                    @*<td class="col-md-2">
+                            <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="text" />
+                            <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="hidden" />
+                        </td>*@
+                    <td class="col-md-4">
+                        <input asp-for="@Model.VMConfirmacionLista[i].IdClave" type="hidden" />
+                        <input asp-for="@Model.VMConfirmacionLista[i].Jugador.Nombre" type="text" />
+                    </td>
+                    <td class="col-md-4">
+                        @Model.VMConfirmacionLista[i].CantidadPartidosJugados
+                    </td>
+                    @*<td class="col-md-1">
+                        <input type="checkbox" asp-for="@Model.VMConfirmacionLista[i].Confirmado" />
+                    </td>*@
+                    <td>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" onclick="Confirmar('@String.Format("VMConfirmacionLista_{0}__Confirmado", i)', @Model.VMConfirmacionLista[i].IdClave)"
+                                   asp-for="@Model.VMConfirmacionLista[i].Confirmado">
+                            <label class="custom-control-label" for="@String.Format("VMConfirmacionLista_{0}__Confirmado", i)"></label>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <h1>@ViewBag.Error</h1>
+    }
+
+    <script>
+
+        function Confirmar(control, idJugadorIN) {
+            var valor = document.getElementById(control).checked;
+
+            console.log(control);
+            console.log(idJugadorIN);
+            console.log(valor);
+
+            var serviceURL = '/Partidos/ConfirmacionAjax';
+            //var data = JSON.stringify({
+            //    'idJugador': idJugadorIN,
+            //    'confirmado': true
+            //});
+            serviceURL += '?idJugador=' + idJugadorIN;
+            serviceURL += '&confirmado=' + valor;
+
+            $.ajax({
+                type: "GET",
+                url: serviceURL,
+                /*data: data,*/
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: successFunc,
+                error: errorFunc
+            });
+
+
+
+
         }
-    </table>
+
+        function successFunc(data, status) {
+            //alert(data);
+        }
+
+        function errorFunc() {
+            //alert('error');
+        }
+    </script>
 
     <div class="form-group">
         <input type="submit" value="GRABAR" class="btn btn-primary" />

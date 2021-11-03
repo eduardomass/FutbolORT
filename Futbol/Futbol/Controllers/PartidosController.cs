@@ -196,7 +196,6 @@ namespace Futbol.Controllers
         public ActionResult Confirmacion(JugadoresPorEquipo jugadorPorEquipo)
         {
             RNPartido.ConfirmarODesconfirmarJugador(_context, jugadorPorEquipo.Jugador.Id);
-
             return RedirectToAction("Confirmacion");
             
 
@@ -206,30 +205,38 @@ namespace Futbol.Controllers
         public IActionResult ConfirmacionMasiva()
         {
             var ultimoPartido = RNPartido.ObtenerPartidoProximoAJugar(_context);
-
-            List<int> idsEquiposPosibles = new List<int>();
-            idsEquiposPosibles.Add(ultimoPartido.EquipoLocalId);
-            idsEquiposPosibles.Add(ultimoPartido.EquipoVisitianteId);
-            var listaJugadoresPorEquipos = _context.JugadoresPorEquipos.Where(o => idsEquiposPosibles.Contains(o.EquipoId)).ToList();
-
-            var jugadores = _context.Jugadores.ToList();
             var lista = new Futbol.ViewModel.VMConfirmacionList();
-            lista.FechaPartido = ultimoPartido.Fecha;
-            lista.VMConfirmacionLista = new List<ViewModel.VMConfirmacion>();
-            foreach (var jugador in jugadores)
+            if (ultimoPartido == null)
             {
-                ViewModel.VMConfirmacion modelo = new ViewModel.VMConfirmacion();
-                
-                modelo.Jugador = jugador;
-                modelo.IdClave = jugador.Id;
-                modelo.Confirmado = listaJugadoresPorEquipos.Any(o => o.JugadorId == jugador.Id);
-                modelo.FechaPartido = ultimoPartido.Fecha;
-                modelo.CantidadPartidosJugados = _context
-                    .JugadoresPorEquipos.Count(j => j.JugadorId == jugador.Id);
-                lista.VMConfirmacionLista.Add(modelo);
+                ViewBag.Error = "No hay proxima fecha para jugar";
+                return View(lista);
             }
-            
-            return View(lista);
+            else
+            {
+                List<int> idsEquiposPosibles = new List<int>();
+                idsEquiposPosibles.Add(ultimoPartido.EquipoLocalId);
+                idsEquiposPosibles.Add(ultimoPartido.EquipoVisitianteId);
+                var listaJugadoresPorEquipos = _context.JugadoresPorEquipos.Where(o => idsEquiposPosibles.Contains(o.EquipoId)).ToList();
+
+                var jugadores = _context.Jugadores.ToList();
+                
+                lista.FechaPartido = ultimoPartido.Fecha;
+                lista.VMConfirmacionLista = new List<ViewModel.VMConfirmacion>();
+                foreach (var jugador in jugadores)
+                {
+                    ViewModel.VMConfirmacion modelo = new ViewModel.VMConfirmacion();
+
+                    modelo.Jugador = jugador;
+                    modelo.IdClave = jugador.Id;
+                    modelo.Confirmado = listaJugadoresPorEquipos.Any(o => o.JugadorId == jugador.Id);
+                    modelo.FechaPartido = ultimoPartido.Fecha;
+                    modelo.CantidadPartidosJugados = _context
+                        .JugadoresPorEquipos.Count(j => j.JugadorId == jugador.Id);
+                    lista.VMConfirmacionLista.Add(modelo);
+                }
+
+                return View(lista);
+            }
         }
 
         // POST: Partidos/Create
@@ -247,6 +254,14 @@ namespace Futbol.Controllers
             }
 
             return RedirectToAction(nameof(ConfirmacionMasiva));
+        }
+
+        [HttpGet]
+        public void ConfirmacionAjax(int idJugador, bool confirmado)
+        {
+                RNPartido.ConfirmarODesconfirmarJugador(_context,
+                    idJugador,
+                    confirmado);
         }
 
     }

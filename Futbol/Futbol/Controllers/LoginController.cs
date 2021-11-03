@@ -1,5 +1,6 @@
 ﻿using Futbol.BaseDatos;
 using Futbol.Models;
+using Futbol.Reglas;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -40,16 +41,8 @@ namespace Futbol.Controllers
 
             if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password))
             {
-                Usuario usuario = null;
 
-                if (rol == Rol.Jugador)
-                {
-                    usuario = _context.Jugadores.FirstOrDefault(o => o.Email.ToUpper() == email.ToUpper() && password == o.Password);
-                }
-                else if (rol == Rol.Administrador)
-                {
-                    usuario = _context.Administradores.FirstOrDefault(o => o.Email.ToUpper() == email.ToUpper() && password == o.Password);
-                }
+                var usuario = RNUsuarios.ObtenerUsuario(_context, email, password);
 
                 if (usuario != null)
                 {
